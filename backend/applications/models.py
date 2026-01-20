@@ -31,6 +31,16 @@ class Category(db.Model):
     
     products = db.relationship('Products', backref='category', cascade="all, delete-orphan", lazy=True)
 
+    def __repr__(self):
+        return f'<category {self.name!r}>'
+    
+    def convert_to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
+
 
 class Products(db.Model):
     id = Column(Integer, primary_key=True)
@@ -43,6 +53,24 @@ class Products(db.Model):
 
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     carts = db.relationship('Cart', backref='products', cascade="all, delete-orphan", lazy=True)
+
+
+    def convert_to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "price": self.price,
+            "unit": self.unit,
+            "stock": self.stock,
+            "sold": self.sold,
+            "category_id": self.category_id,
+            "category_name": self.category_name
+        }
+
+
+
+
 
 
 class Cart(db.Model):

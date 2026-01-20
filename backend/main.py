@@ -1,8 +1,10 @@
 from flask import Flask, request
 from flask_restful import Api
+from flask_jwt_extended import JWTManager
 from applications.models import db, Users
-from applications.api import WelcomeAPI, LoginAPI, SignupAPI
+from applications.api import WelcomeAPI, LoginAPI, SignupAPI, CategoryAPI
 import os
+from datetime import timedelta
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -10,6 +12,9 @@ app = Flask(__name__)
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(base_dir, "database.sqlite3")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
+app.config["SECRET_KEY"] = "bootcamp-apps-secret"
+app.config["JWT_SECRET_KEY"] = "bootcamp-secret"
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=12)
 
 
 # @app.route('/')
@@ -19,6 +24,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.sqlite3"
 
 db.init_app(app)
 api = Api(app)
+jwt = JWTManager(app)
 app.app_context().push()
 
 
@@ -34,6 +40,7 @@ app.app_context().push()
 api.add_resource(WelcomeAPI, '/api/welcome')
 api.add_resource(LoginAPI, '/api/login')
 api.add_resource(SignupAPI, '/api/signup')
+api.add_resource(CategoryAPI, '/api/category', '/api/category/<int:category_id>')
 
 
 
